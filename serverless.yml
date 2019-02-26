@@ -1,0 +1,41 @@
+
+service: SNSInvokeLambda # NOTE: update this with your service name
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: us-east-2
+# you can overwrite defaults here
+#  stage: dev
+  
+plugins:
+  - serverless-webpack
+  - serverless-offline-sns
+  - serverless-offline
+
+# you can define service wide environment variables here
+environment:
+  REGION: us-east-2
+  myTopicArn: arn:aws:sns:us-east-2:160116285639:SNSInvokeLambdadevmytopic
+
+custom:
+  serverless-offline-sns:
+    port: 4002 # a free port for the sns server to run on
+    debug: false
+    accountId: 160116285639
+# you can add packaging information here
+  webpack:
+    packager: 'yarn'   
+    includeModules:
+      # forceInclude:
+      #   - axios
+      forceExclude:
+        - aws-sdk
+
+functions:
+  receiver:
+    handler: listening/handler.subscribeSns
+    events:
+      - sns: myTopicArn
+
+
